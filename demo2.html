@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#box {
+				width: 600px;
+				height: 400px;
+				background: #EEEEEE;
+				position: relative;
+				overflow: hidden;
+			}
+			.line {
+				position: absolute;
+				height: 1px;
+				background: #000;
+			}
+			#box img {
+				position: absolute;
+				width: 100px;
+				height: 100px;
+				border-radius: 50%;
+				border: 2px solid #fff;
+				transition: 1s;
+				-webkit-transition: 1s;
+			}
+			#line,#grandpa,#father,#son,#grandson {
+				position: relative;
+				top: 0;
+				left: 0;
+			}
+			#son img,#grandson img {
+				width: 80px;
+				height: 80px;
+			}
+			/*#box img:hover {
+				top: 20px;
+				left: 250px;
+				width: 100px;
+				height: 100px;
+			}*/
+			.note {
+				position: absolute;
+				top: 200px;
+				left: 230px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="box">
+			<div id="line"></div>
+			<!--<div class="line"></div>-->
+			<div id="grandpa"></div>
+			<div id="father"></div>
+			<div id="son"></div>
+			<div id="grandson"></div>
+		</div>
+		<script src="js/jquery-3.1.0.min.js"></script>
+		<script type="text/javascript">
+//			划线函数
+			function drowLine (sx,sy,ex,ey) {
+				// sx,sy分别代表起点x坐标和起点y坐标，ex,ey对应重点坐标
+				var x = sx - ex,
+					y = sy - ey;
+				var angle = 360*Math.atan(y/x)/(2*Math.PI);
+				(x<0)?angle+=180:angle;
+				var length = Math.pow((x * x + y * y), 0.5);
+				$('#line').prepend('<div class="line"></div>');
+				$('#line div:first-child').css({
+					'top': ey,
+					'left': ex,
+					'width': length,
+					'transform': 'rotate(' + angle + 'deg)',
+					'-webkit-transform': 'rotate(' + angle + 'deg)',
+					'transform-origin': '0 0',
+					'-webkit-transform-origin': '0 0',
+				});
+			}
+			// 设置祖父头像
+			function setGrandfather (address) {
+				$('#grandpa').append('<img src="' + address + '"/>');
+				$('#grandpa').css({
+					'top': '-210px',
+				})
+			}
+// =========获取数据 防止父头像 同时根据父头像的位置及子头像的个数推算子头像的位置 并将子头像防止到位同时连接父头像和子头像
+			
+			// 首次设置父头像
+			function setFather (address){
+				$('#father').append('<img src="' + address + '"/>');
+				$('#father img:first-child').css({
+					'top': '20px',
+					'left': '250px'
+				})
+			}
+ 			// 首次设置子头像
+			function setSon (array) {
+				var l = array.length;
+				if (l == 0) {
+					$('#son').append('<div class="note">他还没有邀请朋友哦~</div>')
+				} else{
+					for (var i = 0; i<l; i++) {
+						// 处理索引值
+						var n;
+						(i%2 == 0)?n = i/2:n = -i;
+						if(i == 0) {n = i}
+						else if (i == 1) {n = -i}
+						else if (i == 2||i == 4) {n = i/2}
+						else if (i == 3) {n = -i+1};
+						// 添加图片
+						$('#son').append('<img src="' + array[i] + '"/>');
+						$('#son img:last-child').css({
+							'top': '260px',
+							'left': 260 + 120*n + 'px'
+						});
+						// 添加连接线
+						var ex = 300 + 120*n;
+						drowLine(300,70,ex,300)
+					}
+				}
+			}
+//  ========上面很长一段话到这里的代码都需要修改===================================================
+			
+			// 点击父头像渲染祖父及同类
+			$('#father').on('click','img',function () {
+				var that = this;
+				var thisImg = $(this).attr('src');
+				// 将当前点击头像缩小为80px
+				$(this).animate({
+					height: '80px',
+					width: '80px'
+				},2000,function(){
+					// 使用原生js方法获取点击img  style.top和style.left  用于后续计算
+					var style = window.getComputedStyle(that, null);
+					// 后台获取图片
+					var pic = {'father':'img/1.jpg','son':['img/2.jpeg','img/3.jpeg','img/1.jpg','img/2.jpeg','img/3.jpeg']};
+					// =================以下全部在数据请求的回调函数中====================
+					// 遍历同类数组从中取出当前图片
+					var sonPic = pic.son;
+					for (var i = 0, l = sonPic.length; i < l; i++) {
+						if (sonPic[i] == thisImg) {
+							sonPic.splice(i,1);
+							break;
+						}
+					};
+					//计算祖父的位置渲染祖父头像
+					var top = parseInt(style.top);
+					var left = parseInt(style.left);
+					var grandpaTop = top - 230;
+					var grandpaLeft = left + 120*(sonPic.length/2) - 10;
+					$('#grandpa').append('<img src="' + pic.father + '"/>');
+					$('#grandpa img').css({
+						'top': grandpaTop + 'px',
+						'left': grandpaLeft + 'px',
+					})
+					//划线点位置
+					var lineSx = grandpaLeft + 50;
+					var lineSy = grandpaTop + 50;
+					var lineEx = left + 40;
+					var lineEy = top + 40;
+					// 绘制第一条连接线
+					drowLine(lineSx,lineSy,lineEx,lineEy);
+					// 遍历处理后的图片添加属性渲染到页面中
+					for (var i = 0, l = sonPic.length; i < l; i++) {
+						var Left = left + 120*(i+1);
+						$('#father').append('<img src="' + sonPic[i] + '"/>');
+						$('#father img:last-child').css({
+							'top': top + 'px',
+							'left': Left + 'px',
+							'height': '80px',
+						'width': '80px'
+						});
+						// 绘制连接线
+						drowLine(lineSx,lineSy,Left + 40 ,lineEy);
+					}
+					// 计算动画
+					var moveTop = 230 + 'px';
+					var moveLeft = -grandpaLeft + left + 'px';
+					// 执行动画
+					$('#line').animate({
+						top: moveTop,
+						left: moveLeft,
+					},2000);
+					$('#grandpa').animate({
+						top: moveTop,
+						left: moveLeft,
+					},2000);
+					$('#father').animate({
+						top: moveTop,
+						left: moveLeft,
+					},2000);
+					$('#son').animate({
+						top: moveTop,
+						left: moveLeft,
+					},2000,function(){
+						// 重置样式
+						$('#son').html($('#father').html());
+						$('#father').html($('#grandpa').html());
+						$('#grandpa,#father,#son,#line').css({
+							'top': 0,
+							'left': 0
+						});
+						// 取出所有img修改top,left
+						var img = $('img');
+						for (var i = 1, l = img.length; i < l; i++) {
+							$(img[i]).css({
+								'top': parseInt(window.getComputedStyle(img[i], null).top) + parseInt(moveTop) + 'px',
+								'left': parseInt(window.getComputedStyle(img[i], null).left) + parseInt(moveLeft) + 'px',
+							})
+//							window.window.getComputedStyle(img[i], null);
+						}
+						// 删除$('#line')最上面的pic.son.length条线
+						
+					});
+					// 重置样式
+//					$('#son').html($('#father').html());
+//					$('#father').html($('#grandpa').html());
+//					$('#grandpa,#father,#son,#line').css({
+//						'top': 0,
+//						'left': 0
+//					})
+				});	
+			})
+			// 初始化
+			setFather('img/1.jpg');
+			setSon(['img/2.jpeg','img/1.jpg','img/3.jpeg','img/2.jpeg','img/1.jpg']);
+		</script>
+	</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<style type="text/css">
+			.box {
+				width: 500px;
+				height: 300px;
+				background: #eee;
+				position: relative;
+				overflow: hidden;
+			}
+			
+			#one,#two,#three,#four,#five {
+				width: 500px;
+				height: 300px;
+				position: absolute;
+				z-index: 0;
+				opacity: 0;
+			}
+			
+			#father {
+				margin: 0 auto;
+				width: 100px;
+				height: 100px;
+				position: absolute;
+				top: 20px;
+				left:200px;
+			}
+			
+			#father img {
+				border-radius: 50%;
+				width: 100px;
+				height: 100px;
+				opacity: 0.7;
+			}
+			#father img:hover {
+				opacity: 0.99;
+			}
+			#child {
+				width: 480px;
+				height: 100px;
+				position: relative;
+				top: 220px;
+				left: 20px;
+				/*display: flex;
+				flex-flow: row nowrap;
+				justify-content: space-around;*/
+				overflow: hidden;
+			}
+			#child img {
+				position: absolute;
+				opacity: 0.6;
+				width: 60px;
+				height: 60px;
+				border-radius: 50%;
+			}
+			#child img:hover {
+				opacity: 0.99;
+			}
+			.one img:nth-child(1){
+				left: 200px;
+			}
+			.two img:nth-child(1){
+				left: 110px
+			}
+			.two img:nth-child(2){
+				left: 290px
+			}
+			.three img:nth-child(1){
+				left: 200px;
+			}
+			.three img:nth-child(2){
+				left: 110px;
+			}
+			.three img:nth-child(3){
+				left: 290px;
+			}
+			.four img:nth-child(1){
+				left: 150px;
+			}
+			.four img:nth-child(2){
+				left: 50px;
+			}
+			.four img:nth-child(3){
+				left: 250px;
+			}
+			.four img:nth-child(4){
+				left: 350px;
+			}
+			.five img:nth-child(1){
+				left: 200px;
+			}
+			.five img:nth-child(2){
+				left: 110px;
+			}
+			.five img:nth-child(3){
+				left: 290px;
+			}
+			.five img:nth-child(4){
+				left: 380px;
+			}
+			.five img:nth-child(5){
+				left: 20px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="box">
+			<canvas id="one"></canvas>
+			<canvas id="two"></canvas>
+			<canvas id="three"></canvas>
+			<canvas id="four"></canvas>
+			<canvas id="five"></canvas>
+			<div id="father">
+				<img src="img/1.jpg" />
+			</div>
+			<div id="child">
+				<img src="img/1.jpg" />
+				<img src="img/2.jpeg" />
+				<img src="img/3.jpeg" />
+				<img src="img/2.jpeg" />
+				<img src="img/1.jpg" />
+			</div>
+		</div>
+		<script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
+		<script>
+//			canvas画线
+			var oneCan = document.getElementById("one");
+			var oneOne = oneCan.getContext("2d");
+			oneOne.save();
+			oneOne.translate(0.5,0.5);  
+			oneOne.lineWidth = 1; 
+			oneOne.beginPath();
+			oneOne.moveTo(150, 60);
+			oneOne.lineTo(150, 110);
+			oneOne.stroke();
+			oneOne.restore();
+			var twoCan = document.getElementById("two");
+			var threeCan = document.getElementById("three");
+			var fourCan = document.getElementById("four");
+			var fourOne = fourCan.getContext("2d");
+			fourOne.save();
+			fourOne.translate(0.5,0.5);  
+			fourOne.lineWidth = 1; 
+			fourOne.beginPath();
+			fourOne.moveTo(155, 59);
+			fourOne.lineTo(175, 110);
+			fourOne.stroke();
+			fourOne.restore();
+			var fourTwo = fourCan.getContext("2d");
+			fourTwo.save();
+			fourTwo.translate(0.5,0.5);  
+			fourTwo.lineWidth = 1; 
+			fourTwo.beginPath();
+			fourTwo.moveTo(145, 59);
+			fourTwo.lineTo(125, 110);
+			fourTwo.stroke();
+			var fourThree = fourCan.getContext("2d");
+			fourThree.save();
+			fourThree.translate(0.5,0.5);  
+			fourThree.lineWidth = 1; 
+			fourThree.beginPath();
+			fourThree.moveTo(165, 58);
+			fourThree.lineTo(230, 110);
+			fourThree.stroke(); 
+			var fourFour = fourCan.getContext("2d");
+			fourFour.save();
+			fourFour.translate(0.5,0.5);  
+			fourFour.lineWidth = 1; 
+			fourFour.beginPath();
+			fourFour.moveTo(135, 58);
+			fourFour.lineTo(70, 110);
+			fourFour.stroke();
+			var fiveCan = document.getElementById("five");
+			var fiveOne = fiveCan.getContext("2d");
+			fiveOne.save();
+			fiveOne.translate(0.5,0.5);  
+			fiveOne.lineWidth = 1; 
+			fiveOne.beginPath();
+			fiveOne.moveTo(150, 60);
+			fiveOne.lineTo(150, 110);
+			fiveOne.stroke();
+			fiveOne.restore();
+			var fiveTwo = fiveCan.getContext("2d");
+			fiveTwo.save();
+			fiveTwo.translate(0.5,0.5);  
+			fiveTwo.lineWidth = 1; 
+			fiveTwo.beginPath();
+			fiveTwo.moveTo(140, 59);
+			fiveTwo.lineTo(100, 110);
+			fiveTwo.stroke();
+			var fiveThree = fiveCan.getContext("2d");
+			fiveThree.save();
+			fiveThree.translate(0.5,0.5);  
+			fiveThree.lineWidth = 1; 
+			fiveThree.beginPath();
+			fiveThree.moveTo(160, 59);
+			fiveThree.lineTo(200, 110);
+			fiveThree.stroke(); 
+			var fiveFour = fiveCan.getContext("2d");
+			fiveFour.save();
+			fiveFour.translate(0.5,0.5);  
+			fiveFour.lineWidth = 1; 
+			fiveFour.beginPath();
+			fiveFour.moveTo(130, 55);
+			fiveFour.lineTo(50, 110);
+			fiveFour.stroke();
+			var fiveFive = fiveCan.getContext("2d");
+			fiveFive.save();
+			fiveFive.translate(0.5,0.5);  
+			fiveFive.lineWidth = 1; 
+			fiveFive.beginPath();
+			fiveFive.moveTo(170, 55);
+			fiveFive.lineTo(250, 110);
+			fiveFive.stroke();
+//			检查子元素个数,确定canvas
+			var canvas = '';
+			function getCanvas () {
+				var i = $('#child img').length;
+				if(i == 1){
+					canvas = '#one';
+					$('#child').removeClass();
+					$('#child').addClass('one')
+				}else if(i == 4){
+					canvas = '#four';
+					$('#child').removeClass();
+					$('#child').addClass('four')
+				}else if(i == 5){
+					canvas = '#five';
+					$('#child').removeClass();
+					$('#child').addClass('five')
+				}
+			}
+			getCanvas();
+			$(canvas).css('opacity','1');
+//			父元素事件绑定
+			$('#father').on('click','img',function(){
+				$('*').stop(true,true);
+				$(canvas).animate({
+					opacity: '0',
+				},2000)
+				$('#father').animate({
+					top: '220px',
+					left: '220px',
+					width: '60px',
+					height: '60px'
+				},2000)
+				$(this).animate({
+					width:'60px',
+					height: '60px',
+					opacity: '0'
+				},2000)
+				$('#child').animate({
+					top: '420px',
+					opacity: '0'
+				},2000)
+				setTimeout('reset()',3000)
+			})
+			function reset () {
+				$('#father').css({
+					'top': '20px',
+					'left': '200px',
+					'width': '100px',
+					'height': '100px'
+				});
+				$('#father img').css({
+					'width': '100px',
+					'height': '100px'
+				});
+				$('#child').css('top','220px');
+				$('#father').html('<img src="img/3.jpeg" />');
+				$('#child').html('<img src="img/1.jpg" />');
+				getCanvas();
+				$('#father').animate({
+					opacity: 0.8
+				},2000)
+				$('#child').animate({
+					opacity: 0.8
+				},2000)
+				$(canvas).animate({
+					opacity: 0.8
+				},2000)
+			}
+//			子元素事件绑定
+			$('#child').on('click','img',function(){
+				$('*').stop(true,true);
+				$('#child img').css('display','none')
+				$(this).css('display','block')
+//				$('#one').css('opacity','0.8')
+				$(canvas).animate({
+					opacity: '0',
+				},2000)
+				$(this).animate({
+					width: '100px',
+					height: '100px',
+					left: '180px'
+				},2000)
+				$('#child').animate({
+					top: '20px'
+				},2000)
+				$('#father').animate({
+					top: '-180px'
+				},2500)
+				setTimeout('childset()',3000)
+			})
+			function childset () {
+				$('#father').css({
+					'top': '20px',
+					'left': '200px',
+					'width': '100px',
+					'height': '100px'
+				});
+				$('#father img').css({
+					'width': '100px',
+					'height': '100px'
+				});
+				$('#child').css('top','220px');
+				$('#father').html('<img src="img/3.jpeg" />');
+				$('#child').html('<img src="img/1.jpg" /><img src="img/2.jpeg" /><img src="img/1.jpg" /><img src="img/3.jpeg" />');
+				getCanvas();
+				$('#father').animate({
+					opacity: 0.8
+				},2000)
+				$('#child').animate({
+					opacity: 0.8
+				},2000)
+				$(canvas).animate({
+					opacity: 0.8
+				},2000)
+			}
+		</script>
+	</body>
+
+</html>
