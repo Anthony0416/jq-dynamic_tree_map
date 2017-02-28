@@ -16,9 +16,7 @@
 				height: 1px;
 				background: #000;
 			}
-			/*.line div {
-				opacity: 1;
-			}*/
+
 			#box img {
 				position: absolute;
 				width: 80px;
@@ -33,21 +31,6 @@
 				top: 0;
 				left: 0;
 			}
-			/*#line,.group {
-				position: relative;
-				top: 0;
-				left: 0;
-			}*/
-			/*#son img,#grandson img {
-				width: 80px;
-				height: 80px;
-			}*/
-			/*#box img:hover {
-				top: 20px;
-				left: 250px;
-				width: 100px;
-				height: 100px;
-			}*/
 			.note {
 				position: absolute;
 				top: 200px;
@@ -128,6 +111,7 @@
 			
 			// 点击父头像渲染祖父及同类
 			$('#pic').on('click','.group:first-child img',function () {
+				$('*').stop(true,true);
 				var that = this;
 				var thisImg = $(this).attr('src');
 				// 使用原生js方法获取点击img  style.top和style.left  用于后续计算
@@ -192,6 +176,7 @@
 			
 			// 点击子头像渲染子类
 			$('#pic').on('click','.group:last-child img',function () {
+				$('*').stop(true,true);
 				var that = this;
 				// 获取点击的索引值
 				var index = $('.group:last-child img').index(that);
@@ -215,11 +200,17 @@
 				$('#pic').append('<div class="group"></div>');
 				for (var i = 0; i < Line; i++) {
 					var Left = sonLeft + 120*i;
-					$('.group:last-child').append('<img src="' + pic[i] + '"/>');
-					$('.group:last-child img:last-child').css({
+//					$('.group:last-child').append('<img src="' + pic[i] + '"/>');
+//					$('.group:last-child img:last-child').css({
+//						'top': sonTop + 'px',
+//						'left': Left + 'px',
+//					});
+					
+					var a = $('<img src="' + pic[i] + '"/>').css({
 						'top': sonTop + 'px',
 						'left': Left + 'px',
 					});
+					$('.group:last-child').append(a);
 					// 绘制连接线
 					drowLine(lineSx,lineSy,Left+40,lineEy);
 				}
@@ -233,7 +224,6 @@
 					top: moveTop,
 					left: moveLeft,
 				},2000,function(){
-					console.log(that)
 					$('.group:first-child').remove();
 					$('.group:first-child').html(that);
 					for (var i = 0; i < childLine; i++){
