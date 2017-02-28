@@ -16,24 +16,32 @@
 				height: 1px;
 				background: #000;
 			}
+			/*.line div {
+				opacity: 1;
+			}*/
 			#box img {
 				position: absolute;
-				width: 100px;
-				height: 100px;
+				width: 80px;
+				height: 80px;
 				border-radius: 50%;
 				border: 2px solid #fff;
 				transition: 1s;
 				-webkit-transition: 1s;
 			}
-			#line,#grandpa,#father,#son,#grandson {
+			#canvas {
 				position: relative;
 				top: 0;
 				left: 0;
 			}
-			#son img,#grandson img {
+			/*#line,.group {
+				position: relative;
+				top: 0;
+				left: 0;
+			}*/
+			/*#son img,#grandson img {
 				width: 80px;
 				height: 80px;
-			}
+			}*/
 			/*#box img:hover {
 				top: 20px;
 				left: 250px;
@@ -49,12 +57,10 @@
 	</head>
 	<body>
 		<div id="box">
-			<div id="line"></div>
-			<!--<div class="line"></div>-->
-			<div id="grandpa"></div>
-			<div id="father"></div>
-			<div id="son"></div>
-			<div id="grandson"></div>
+			<div id="canvas">
+				<div id="line"></div>
+				<div id="pic"></div>
+			</div>
 		</div>
 		<script src="js/jquery-3.1.0.min.js"></script>
 		<script type="text/javascript">
@@ -66,8 +72,8 @@
 				var angle = 360*Math.atan(y/x)/(2*Math.PI);
 				(x<0)?angle+=180:angle;
 				var length = Math.pow((x * x + y * y), 0.5);
-				$('#line').prepend('<div class="line"></div>');
-				$('#line div:first-child').css({
+				$('#line').append('<div class="line"></div>');
+				$('#line div:last-child').css({
 					'top': ey,
 					'left': ex,
 					'width': length,
@@ -77,154 +83,165 @@
 					'-webkit-transform-origin': '0 0',
 				});
 			}
-			// 设置祖父头像
-			function setGrandfather (address) {
-				$('#grandpa').append('<img src="' + address + '"/>');
-				$('#grandpa').css({
-					'top': '-210px',
-				})
-			}
+			
+			var childLine;
+
 // =========获取数据 防止父头像 同时根据父头像的位置及子头像的个数推算子头像的位置 并将子头像防止到位同时连接父头像和子头像
 			
 			// 首次设置父头像
 			function setFather (address){
-				$('#father').append('<img src="' + address + '"/>');
-				$('#father img:first-child').css({
-					'top': '20px',
-					'left': '250px'
+				$('#pic').append('<div class="group"></div>');
+				$('.group:last-child').append('<img src="' + address + '"/>');
+				$('.group:last-child img').css({
+					'top': '30px',
+					'left': '260px'
 				})
 			}
  			// 首次设置子头像
 			function setSon (array) {
-				var l = array.length;
-				if (l == 0) {
-					$('#son').append('<div class="note">他还没有邀请朋友哦~</div>')
+				$('#pic').append('<div class="group"></div>');
+				childLine = array.length;
+				// 判断子头像位置
+				if (childLine == 0) {
+					$('.group:last-child').append('<div class="note">他还没有邀请朋友哦~</div>')
 				} else{
-					for (var i = 0; i<l; i++) {
-						// 处理索引值
-						var n;
-						(i%2 == 0)?n = i/2:n = -i;
-						if(i == 0) {n = i}
-						else if (i == 1) {n = -i}
-						else if (i == 2||i == 4) {n = i/2}
-						else if (i == 3) {n = -i+1};
+					// 计算第一个头像位置
+					var left = 260 - 120*(childLine-1)/2;
+					for (var i = 0; i<childLine; i++) {
 						// 添加图片
-						$('#son').append('<img src="' + array[i] + '"/>');
-						$('#son img:last-child').css({
+						$('.group:last-child').prepend('<img src="' + array[i] + '"/>');
+						$('.group:last-child img:first-child').css({
 							'top': '260px',
-							'left': 260 + 120*n + 'px'
+							'left': left + 120*i + 'px'
 						});
 						// 添加连接线
-						var ex = 300 + 120*n;
+						var ex = left + 40 + 120*i;
 						drowLine(300,70,ex,300)
 					}
 				}
 			}
-//  ========上面很长一段话到这里的代码都需要修改===================================================
 			
-			// 点击父头像渲染祖父及同类
-			$('#father').on('click','img',function () {
-				var that = this;
-				var thisImg = $(this).attr('src');
-				// 将当前点击头像缩小为80px
-				$(this).animate({
-					height: '80px',
-					width: '80px'
-				},2000,function(){
-					// 使用原生js方法获取点击img  style.top和style.left  用于后续计算
-					var style = window.getComputedStyle(that, null);
-					// 后台获取图片
-					var pic = {'father':'img/1.jpg','son':['img/2.jpeg','img/3.jpeg','img/1.jpg','img/2.jpeg','img/3.jpeg']};
-					// =================以下全部在数据请求的回调函数中====================
-					// 遍历同类数组从中取出当前图片
-					var sonPic = pic.son;
-					for (var i = 0, l = sonPic.length; i < l; i++) {
-						if (sonPic[i] == thisImg) {
-							sonPic.splice(i,1);
-							break;
-						}
-					};
-					//计算祖父的位置渲染祖父头像
-					var top = parseInt(style.top);
-					var left = parseInt(style.left);
-					var grandpaTop = top - 230;
-					var grandpaLeft = left + 120*(sonPic.length/2) - 10;
-					$('#grandpa').append('<img src="' + pic.father + '"/>');
-					$('#grandpa img').css({
-						'top': grandpaTop + 'px',
-						'left': grandpaLeft + 'px',
-					})
-					//划线点位置
-					var lineSx = grandpaLeft + 50;
-					var lineSy = grandpaTop + 50;
-					var lineEx = left + 40;
-					var lineEy = top + 40;
-					// 绘制第一条连接线
-					drowLine(lineSx,lineSy,lineEx,lineEy);
-					// 遍历处理后的图片添加属性渲染到页面中
-					for (var i = 0, l = sonPic.length; i < l; i++) {
-						var Left = left + 120*(i+1);
-						$('#father').append('<img src="' + sonPic[i] + '"/>');
-						$('#father img:last-child').css({
-							'top': top + 'px',
-							'left': Left + 'px',
-							'height': '80px',
-						'width': '80px'
-						});
-						// 绘制连接线
-						drowLine(lineSx,lineSy,Left + 40 ,lineEy);
-					}
-					// 计算动画
-					var moveTop = 230 + 'px';
-					var moveLeft = -grandpaLeft + left + 'px';
-					// 执行动画
-					$('#line').animate({
-						top: moveTop,
-						left: moveLeft,
-					},2000);
-					$('#grandpa').animate({
-						top: moveTop,
-						left: moveLeft,
-					},2000);
-					$('#father').animate({
-						top: moveTop,
-						left: moveLeft,
-					},2000);
-					$('#son').animate({
-						top: moveTop,
-						left: moveLeft,
-					},2000,function(){
-						// 重置样式
-						$('#son').html($('#father').html());
-						$('#father').html($('#grandpa').html());
-						$('#grandpa,#father,#son,#line').css({
-							'top': 0,
-							'left': 0
-						});
-						// 取出所有img修改top,left
-						var img = $('img');
-						for (var i = 1, l = img.length; i < l; i++) {
-							$(img[i]).css({
-								'top': parseInt(window.getComputedStyle(img[i], null).top) + parseInt(moveTop) + 'px',
-								'left': parseInt(window.getComputedStyle(img[i], null).left) + parseInt(moveLeft) + 'px',
-							})
-//							window.window.getComputedStyle(img[i], null);
-						}
-						// 删除$('#line')最上面的pic.son.length条线
-						
-					});
-					// 重置样式
-//					$('#son').html($('#father').html());
-//					$('#father').html($('#grandpa').html());
-//					$('#grandpa,#father,#son,#line').css({
-//						'top': 0,
-//						'left': 0
-//					})
-				});	
-			})
+			
 			// 初始化
 			setFather('img/1.jpg');
-			setSon(['img/2.jpeg','img/1.jpg','img/3.jpeg','img/2.jpeg','img/1.jpg']);
+			setSon(['img/1.jpg','img/3.jpeg','img/2.jpeg','img/1.jpg']);
+			
+			// 点击父头像渲染祖父及同类
+			$('#pic').on('click','.group:first-child img',function () {
+				var that = this;
+				var thisImg = $(this).attr('src');
+				// 使用原生js方法获取点击img  style.top和style.left  用于后续计算
+				var style = window.getComputedStyle(that, null);
+				// 后台获取图片
+				var pic = {'father':'img/1.jpg','son':['img/2.jpeg','img/3.jpeg','img/1.jpg','img/2.jpeg','img/3.jpeg']};
+				// =================以下全部在数据请求的回调函数中====================
+				// 遍历同类数组从中取出当前图片
+				var sonPic = pic.son;
+				for (var i = 0, l = sonPic.length; i < l; i++) {
+					if (sonPic[i] == thisImg) {
+						sonPic.splice(i,1);
+						break;
+					}
+				};
+				//计算祖父的位置渲染祖父头像
+				var top = parseInt(style.top);
+				var left = parseInt(style.left);
+				var grandpaTop = top - 230;
+				var grandpaLeft = left + 120*(sonPic.length/2);
+				$('#pic').prepend('<div class="group"></div>');
+				$('.group:first-child').append('<img src="' + pic.father + '"/>');
+				$('.group:first-child img').css({
+					'top': grandpaTop + 'px',
+					'left': grandpaLeft + 'px',
+				})
+				//划线点位置
+				var lineSx = grandpaLeft + 40;
+				var lineSy = grandpaTop + 40;
+				var lineEx = left + 40;
+				var lineEy = top + 40;
+				// 绘制第一条连接线
+				drowLine(lineSx,lineSy,lineEx,lineEy);
+				// 遍历处理后的图片添加属性渲染到页面中
+				for (var i = 0, l = sonPic.length; i < l; i++) {
+					var Left = left + 120*(i+1);
+					$('.group:nth-child(2)').append('<img src="' + sonPic[i] + '"/>');
+					$('.group:nth-child(2) img:last-child').css({
+						'top': top + 'px',
+						'left': Left + 'px',
+						'height': '80px',
+					'width': '80px'
+					});
+					// 绘制连接线
+					drowLine(lineSx,lineSy,Left + 40 ,lineEy);
+				}
+				// 计算动画
+				var canStyle = window.getComputedStyle($('#canvas')[0], null);
+				var moveTop = parseInt(canStyle.top) + 230 + 'px';
+				var moveLeft = -grandpaLeft + parseInt(canStyle.left) + left + 'px';
+				// 执行动画
+				$('#canvas').animate({
+					top: moveTop,
+					left: moveLeft,
+				},2000,function(){
+					$('.group:last-child').remove();
+					for (var i = 0; i < childLine; i++){
+						$('#line div:first-child').remove()
+					}
+				});
+			})
+			
+			// 点击子头像渲染子类
+			$('#pic').on('click','.group:last-child img',function () {
+				var that = this;
+				// 获取点击的索引值
+				var index = $('.group:last-child img').index(that);
+				// 使用原生js方法获取点击img  style.top和style.left  用于后续计算
+				var style = window.getComputedStyle(that, null);
+				// 后台获取图片
+				var pic = ['img/2.jpeg','img/3.jpeg','img/1.jpg','img/2.jpeg','img/3.jpeg'];
+				// =================以下全部在数据请求的回调函数中====================
+				//获取点击图片的位置求出子头像初始位置
+				var top = parseInt(style.top);
+				var left = parseInt(style.left);
+				var Line = pic.length;
+				var sonTop = top + 230;
+				var sonLeft = left - 120*(Line-1)/2;
+				//划线点位置
+				var lineSx = left + 40;
+				var lineSy = top + 40;
+				var lineEx = sonLeft + 40;
+				var lineEy = sonTop + 40;
+				// 遍历图片添加属性渲染到页面中
+				$('#pic').append('<div class="group"></div>');
+				for (var i = 0; i < Line; i++) {
+					var Left = sonLeft + 120*i;
+					$('.group:last-child').append('<img src="' + pic[i] + '"/>');
+					$('.group:last-child img:last-child').css({
+						'top': sonTop + 'px',
+						'left': Left + 'px',
+					});
+					// 绘制连接线
+					drowLine(lineSx,lineSy,Left+40,lineEy);
+				}
+				// 计算动画
+				var canStyle = window.getComputedStyle($('#canvas')[0], null);
+				var imgStyle = window.getComputedStyle($('.group:first-child img')[0], null);
+				var moveTop = parseInt(canStyle.top) - 230 + 'px';
+				var moveLeft = parseInt(canStyle.left) + (parseInt(imgStyle.left) - left) + 'px';
+				// 执行动画
+				$('#canvas').animate({
+					top: moveTop,
+					left: moveLeft,
+				},2000,function(){
+					console.log(that)
+					$('.group:first-child').remove();
+					$('.group:first-child').html(that);
+					for (var i = 0; i < childLine; i++){
+						$('#line div:first-child').remove();
+					};
+					childLine = Line;
+				});
+			})
 		</script>
 	</body>
 </html>
