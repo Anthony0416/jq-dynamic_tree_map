@@ -31,6 +31,7 @@
 				top: 0;
 				left: 0;
 			}
+			/*note样式需要重新计算  感觉note设定影响美观,建议请求后发现为空弹窗提醒,同时页面保持不动*/
 			.note {
 				position: absolute;
 				top: 200px;
@@ -205,7 +206,7 @@
 //						'top': sonTop + 'px',
 //						'left': Left + 'px',
 //					});
-					
+					// 先添加样式后append 减少dom操作
 					var a = $('<img src="' + pic[i] + '"/>').css({
 						'top': sonTop + 'px',
 						'left': Left + 'px',
